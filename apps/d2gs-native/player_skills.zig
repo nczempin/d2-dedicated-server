@@ -29,6 +29,8 @@ pub fn capture(access: anytype, unit: u32) ?Slice {
         result.hard[i] = @intCast(hard);
         result.effective[i] = @intCast(effective);
     }
+    var pointers: [2]u32 = .{ 0, 0 };
+    var texts: [2]u32 = .{ 0, 0 };
     for (&result.hands, 0..) |*hand, i| {
         hand.* = .{};
         const selected = access.read(list + 8 + @as(u32, @intCast(i)) * 4) orelse continue;
@@ -43,14 +45,28 @@ pub fn capture(access: anytype, unit: u32) ?Slice {
             (access.read(selected + 0x34) orelse continue) != owner or
             @as(u16, @truncate(access.read(text) orelse continue)) != id) continue;
         hand.* = .{ .known = true, .id = id, .owner = owner };
+        pointers[i] = selected;
+        texts[i] = text;
+    }
+    for (&result.hands, 0..) |*hand, i| {
+        if (!hand.known) continue;
+        if ((access.read(list + 8 + @as(u32, @intCast(i)) * 4) orelse return null) != pointers[i] or
+            (access.read(pointers[i]) orelse return null) != texts[i] or
+            (access.read(pointers[i] + 0x34) orelse return null) != hand.owner or
+            @as(u16, @truncate(access.read(texts[i]) orelse return null)) != hand.id or
+            access.skill(unit, hand.id, hand.owner) != pointers[i]) hand.* = .{};
     }
     if ((access.read(unit + 0xa8) orelse return null) != list) return null;
     return result;
 }
 const Fake = struct {
     bonus: i32 = 1, hard: i32 = 0, foreign: bool = false, no_list: bool = false,
-    changing: bool = false, calls: u32 = 0, foreign_hand: bool = false,
+    changing: bool = false, calls: u32 = 0, foreign_hand: bool = false, late_hand_change: bool = false, hand_reads: u32 = 0,
     pub fn read(self: *Fake, at: u32) ?u32 {
+        if (at == 0x40034) {
+            self.hand_reads += 1;
+            if (self.late_hand_change and self.hand_reads > 2) return 99;
+        }
         return switch (at) {
             0x200a8 => if (self.no_list) 0 else 0x30000,
             0x30008 => 0x40000, 0x3000c => 0x41000,
@@ -91,6 +107,13 @@ test "missing list foreign owner and changing rank never become complete skills"
 
 test "a selected hand with a mismatched native owner stays unknown" {
     var memory = Fake{ .foreign_hand = true };
+    const result = capture(&memory, 0x20000).?;
+    try std.testing.expect(!result.hands[0].known);
+    try std.testing.expect(result.hands[1].known);
+}
+
+test "first hand is rechecked after reading the second hand" {
+    var memory = Fake{ .late_hand_change = true };
     const result = capture(&memory, 0x20000).?;
     try std.testing.expect(!result.hands[0].known);
     try std.testing.expect(result.hands[1].known);
