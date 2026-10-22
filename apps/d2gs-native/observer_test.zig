@@ -24,6 +24,7 @@ const Fake = struct {
             0x20010 => self.mode,
             0x2005c => self.stats_pointer,
             0x200a8 => 0,
+            0x20060 => 0,
             else => null,
         };
     }
