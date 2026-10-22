@@ -20,3 +20,7 @@ The exact-image disassemblies and independent byte/hash controls are retained in
 ## Qualification limits
 
 Unit tests execute production capture logic with memory/getter adapters, including foreign/incomplete/changing data, known death and actual stat/layer arguments. They establish decision logic, NOT native function execution. Build proves ABI compilation, NOT live efficacy. Any native observer episode must separately record exact host/image/source, game/actor/session, raw output and cleanup. No native gameplay/input qualification follows from this producer.
+
+## One native execution qualifier, 2026-10-22
+
+Executed source8c5a391 with final ELF SHA49b1f68ea1d400ea323d237313b6a05794cfde520211a2829738fcba0d5bebc7 mounted read-only onto a NEW isolated pinned GS. Normal realm/game factory created fresh IBMObserver (no save editing or clone). No movement/combat inputs. Exact native getter execution produced four null observations before spawn followed by60 records: native GUID1/class1/mode5, HP_Q8=10240, consecutive actual engine frames5..64, game139835916. Raw client0x59 independently names IBMObserver/GUID1/class1; actual0x95 lower15HP bits equal40. Normal client exit0; all five owned containers stopped. Total13.297s including2.563s cleanup. See native-observer-result.json for hashes and exact raw packets. This qualifies this identity/HP/frame slice; it does not qualify action readiness, complete census, inventory or skill facts.

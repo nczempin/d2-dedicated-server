@@ -1,0 +1,44 @@
+{
+  "qualification": "PASS actual native getter execution, identity/HP/frame first slice ONLY",
+  "source_executed": "8c5a39187492111e92859fec1012a7921a487eda",
+  "elf_sha256": "49b1f68ea1d400ea323d237313b6a05794cfde520211a2829738fcba0d5bebc7",
+  "native_game_id": 139835916,
+  "observed_records": 60,
+  "unknown_before_spawn": 4,
+  "engine_frames": [
+    5,
+    64
+  ],
+  "HP_Q8": 10240,
+  "native_packet59_hex": "59010000000149424d4f62736572766572000000000000000000",
+  "native_packet95_hex": "95288011801200000000000000",
+  "independent_wire_identity": {
+    "name": "IBMObserver",
+    "guid": 1,
+    "class": 1
+  },
+  "independent_wire_HP": 40,
+  "client_exit": 0,
+  "total_inclusive_seconds": 13.297000000020489,
+  "all_five_owned_containers_stopped": true,
+  "no_movement_combat": true,
+  "remaining_unknown": [
+    "complete census",
+    "hardranks",
+    "equippedstaff/currenthands",
+    "inventory",
+    "current-controller action readiness"
+  ],
+  "raw_sha256": {
+    "6dadeb122eeabbeca4a86299d8a2c01c168962fc7f2ca59ad63319ce93f49c0c.stderr.raw": "9f78984b39aa37ccc80ce2cd903b155e48fd8f06284673e2af48cf6d1d0d717e",
+    "6dadeb122eeabbeca4a86299d8a2c01c168962fc7f2ca59ad63319ce93f49c0c.stdout.raw": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "74ca01e04e0ff15e8a4c97ea2cffea853e3d7e214e69d201368ca7bdc6c9c917.stderr.raw": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "74ca01e04e0ff15e8a4c97ea2cffea853e3d7e214e69d201368ca7bdc6c9c917.stdout.raw": "70710f68cf03f883a816b14a5a92025eeebf69e37f7ad4235ab2ee338f2911da",
+    "80ae7d462b29c25ddbb7399ce3613263240410f65e61b579558a563afed1f2b9.stderr.raw": "4bd1ded9a2d605350b4f9010ec17a94f93638ef32c396442cd99ac152dfb4b22",
+    "80ae7d462b29c25ddbb7399ce3613263240410f65e61b579558a563afed1f2b9.stdout.raw": "1c23299f17fa58661dd01bef0862796cfe82cdeb7fb4c18090a2e8d98efff22b",
+    "9b8844eab6230d0816305cd9b81e39f82814dfa905516fc40b9cde084fd57aa6.stderr.raw": "e6fdb9f7967c9861c8d0c05f01a34631fc2e5329f4c1a25520d1a5e2efb408df",
+    "9b8844eab6230d0816305cd9b81e39f82814dfa905516fc40b9cde084fd57aa6.stdout.raw": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "a698e87622ef8210a82a15b31599d585ad5472c9688c71472089f6124422e39e.stderr.raw": "6fc9b54a59570c7e4042ae772912ca5290107bbb02cbfd4424cab6de140c0b87",
+    "a698e87622ef8210a82a15b31599d585ad5472c9688c71472089f6124422e39e.stdout.raw": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
