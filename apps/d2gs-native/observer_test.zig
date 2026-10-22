@@ -23,9 +23,12 @@ const Fake = struct {
             0x2000c => self.guid,
             0x20010 => self.mode,
             0x2005c => self.stats_pointer,
+            0x200a8 => 0,
             else => null,
         };
     }
+    pub fn skill(_: *Fake, _: u32, _: u32, _: u32) u32 { return 0; }
+    pub fn level(_: *Fake, _: u32, _: u32, _: bool) i32 { return 0; }
     pub fn stat(self: *Fake, unit: u32, id: i32, layer: u16) ?i32 {
         if (unit != 0x20000 or id < 0 or id > 15 or layer != 0 or self.missing_stat == id) return null;
         self.stats += 1;
