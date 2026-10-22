@@ -23,6 +23,7 @@
   "all_five_owned_containers_stopped": true,
   "no_movement_combat": true,
   "remaining_unknown": [
+    "broader production ownership/session binding beyond isolated wire name/GUID correlation",
     "complete census",
     "hardranks",
     "equippedstaff/currenthands",
