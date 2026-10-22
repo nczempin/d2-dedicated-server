@@ -15,6 +15,7 @@ const seats = @import("gs_seats");
 const dedupe = @import("savededupe.zig");
 const store = @import("store.zig");
 const health = @import("health.zig");
+const observer = @import("observer.zig");
 const p = @import("realm_proto").protocol;
 
 extern "c" fn usleep(usec: c_uint) c_int;
@@ -524,6 +525,7 @@ pub fn tickGames() bool {
             const armed: *u32 = @ptrFromInt(g + game_tick_flag);
             armed.* = 0x400;
             loop(g);
+            observer.observe(s.gameid, g);
             unlock(g);
             ticked = true;
         }
