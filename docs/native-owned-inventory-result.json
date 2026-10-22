@@ -1,0 +1,101 @@
+{
+  "qualification": "native actor top-level inventory membership ONLY, not global item census or property completeness",
+  "source_executed": "9b3181bca244670e016526e59a47ac6072bb9600",
+  "elf_sha256": "ae452006698e27fcb872816a73b048ca55d179678748d0fee237874a71af3935",
+  "native_game_id": 140294668,
+  "native_frames": [
+    5,
+    62
+  ],
+  "records": 58,
+  "native_first_record": {
+    "game_id": 140294668,
+    "actor": 1,
+    "native_frame": 5,
+    "scope": "current_actor_top_level_chain",
+    "inventory": 4148168200,
+    "cursor": 0,
+    "count": 7,
+    "items": [
+      {
+        "guid": 1,
+        "class": 63,
+        "mode": 1,
+        "body": 4,
+        "page": 255,
+        "owner": 1
+      },
+      {
+        "guid": 2,
+        "class": 587,
+        "mode": 2,
+        "body": 0,
+        "page": 255,
+        "owner": 1
+      },
+      {
+        "guid": 3,
+        "class": 587,
+        "mode": 2,
+        "body": 0,
+        "page": 255,
+        "owner": 1
+      },
+      {
+        "guid": 4,
+        "class": 587,
+        "mode": 2,
+        "body": 0,
+        "page": 255,
+        "owner": 1
+      },
+      {
+        "guid": 5,
+        "class": 587,
+        "mode": 2,
+        "body": 0,
+        "page": 255,
+        "owner": 1
+      },
+      {
+        "guid": 6,
+        "class": 529,
+        "mode": 0,
+        "body": 0,
+        "page": 0,
+        "owner": 1
+      },
+      {
+        "guid": 7,
+        "class": 530,
+        "mode": 0,
+        "body": 0,
+        "page": 0,
+        "owner": 1
+      }
+    ]
+  },
+  "client_exit": 0,
+  "total_inclusive_seconds": 12.062000000034459,
+  "all_five_containers_stopped": true,
+  "no_gameplay_inputs": true,
+  "remaining_unknown": [
+    "nested/socket item custody",
+    "nonempty cursor custody",
+    "global loaded items",
+    "item properties",
+    "typed controller ingestion"
+  ],
+  "raw_sha256": {
+    "0a3de1700e74277b479da90e6f727243033337aac19eb9ed35365cba0663ca97.stderr.raw": "489a0de46ac21af002785427aa5f7c3bd16bbae05000e719f23baa7fa8f2835d",
+    "0a3de1700e74277b479da90e6f727243033337aac19eb9ed35365cba0663ca97.stdout.raw": "906ad535d80971a01e1c0be9f5e3fed88dfc7c86d85f0cad93860769cdd154ae",
+    "76f34dcdcd82186d74f205a05cac2d7b25bc5c383530b6506d5015b9af199969.stderr.raw": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "76f34dcdcd82186d74f205a05cac2d7b25bc5c383530b6506d5015b9af199969.stdout.raw": "ae21bc017bb3ae99a4e889ba40a7b01f4726acb7c961fda2c4ee2bf116274e52",
+    "771bc42f1fbc7377ba4b7849d6705d9c6e520065cbd9a135903406cb661d6399.stderr.raw": "24c09098b46847e983448e79edf36ae961621aaccb427afc2e1cb84e5b03b9b8",
+    "771bc42f1fbc7377ba4b7849d6705d9c6e520065cbd9a135903406cb661d6399.stdout.raw": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "8bf2005c70ccc5739adece2fbc03c83bd7106e8c66d8c88e259c6397a51535df.stderr.raw": "7525a81fe4cc73f4fe4b9adff7d8353bab613a1f5cf05707d26230c32507be1e",
+    "8bf2005c70ccc5739adece2fbc03c83bd7106e8c66d8c88e259c6397a51535df.stdout.raw": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cb328d9514c511768a00c0f68554fd7c8ce18fd4bb6d2db7ab21caaaca648bf1.stderr.raw": "db6fe76d7b2897f0754d9f15d2b93e1c21d8729eed956dbccb6da9ad4b2ac363",
+    "cb328d9514c511768a00c0f68554fd7c8ce18fd4bb6d2db7ab21caaaca648bf1.stdout.raw": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

@@ -1,6 +1,7 @@
 const std = @import("std");
 const builtin = @import("builtin");
 const player_skills = @import("player_skills.zig");
+const player_inventory = @import("player_inventory.zig");
 
 // Qualified ONLY against the exact i386 Mac 1.14d image documented in native-observer.md.
 pub const image_sha256 = "1e8dd6dd3d19019cbaa29270f4abfb04960fcf1ce5d341fa520863b0d640d177";
@@ -10,6 +11,7 @@ pub const Observation = struct {
     // A record exists only if all values were read twice under this game lock.
     stats: [16]i32,
     skills: ?player_skills.Slice,
+    inventory: ?player_inventory.Slice,
     pub fn alive(self: Observation) bool { return self.hp_q8 > 0 and self.mode != 0 and self.mode != 17; }
 };
 
@@ -36,6 +38,7 @@ pub fn capture(access: anytype, game_id: u32, game: u32, guid: u32) ?Observation
         if ((access.stat(unit, @intCast(id), 0) orelse return null) != value) return null;
     }
     const skills = if (class == 1) player_skills.capture(access, unit) else null;
+    const inventory = player_inventory.capture(access, unit, actor);
     const hp = values[6];
     if (hp < 0) return null;
     if (access.find(game, guid) != unit or
@@ -45,7 +48,7 @@ pub fn capture(access: anytype, game_id: u32, game: u32, guid: u32) ?Observation
         (access.read(unit + 0x10) orelse return null) != mode or
         (access.read(unit + 0x5c) orelse return null) != stats or
         (access.read(game + 0xa8) orelse return null) != frame) return null;
-    return .{ .game_id = game_id, .actor = actor, .class = class, .mode = mode, .frame = frame, .hp_q8 = hp, .stats = values, .skills = skills };
+    return .{ .game_id = game_id, .actor = actor, .class = class, .mode = mode, .frame = frame, .hp_q8 = hp, .stats = values, .skills = skills, .inventory = inventory };
 }
 
 pub fn qualified(bytes: []const u8) bool {
@@ -106,6 +109,15 @@ pub fn observe(game_id: u32, game: u32) void {
     var native = Native{};
     if (capture(&native, game_id, game, selected_guid)) |o| {
         std.debug.print("native-observer: {{\"game_id\":{d},\"actor\":{d},\"class\":{d},\"mode\":{d},\"native_frame\":{d},\"hp_q8\":{d},\"stats_layer0\":[{d},{d},{d},{d},{d},{d},{d},{d},{d},{d},{d},{d},{d},{d},{d},{d}]}}\n", .{ o.game_id, o.actor, o.class, o.mode, o.frame, o.hp_q8, o.stats[0], o.stats[1], o.stats[2], o.stats[3], o.stats[4], o.stats[5], o.stats[6], o.stats[7], o.stats[8], o.stats[9], o.stats[10], o.stats[11], o.stats[12], o.stats[13], o.stats[14], o.stats[15] });
+        if (o.inventory) |inv| {
+            std.debug.print("native-owned-inventory: {{\"game_id\":{d},\"actor\":{d},\"native_frame\":{d},\"scope\":\"current_actor_top_level_chain\",\"inventory\":{d},\"cursor\":{d},\"count\":{d},\"items\":[", .{ o.game_id, o.actor, o.frame, inv.inventory, inv.cursor, inv.count });
+            for (inv.items[0..inv.count], 0..) |item, i| {
+                std.debug.print("{s}{{\"guid\":{d},\"class\":{d},\"mode\":{d},\"body\":{d},\"page\":{d},\"owner\":{d}}}", .{ if (i == 0) @as([]const u8, "") else ",", item.guid, item.class, item.mode, item.body, item.page, inv.owner });
+            }
+            std.debug.print("]}}\n", .{});
+        } else {
+            std.debug.print("native-owned-inventory: {{\"game_id\":{d},\"actor\":{d},\"native_frame\":{d},\"observation\":null}}\n", .{ o.game_id, o.actor, o.frame });
+        }
         if (o.skills) |skills| {
             std.debug.print("native-skills: {{\"game_id\":{d},\"actor\":{d},\"native_frame\":{d},\"hard_ranks_36_65\":[", .{ o.game_id, o.actor, o.frame });
             for (skills.hard, 0..) |rank, i| std.debug.print("{s}{d}", .{ if (i == 0) @as([]const u8, "") else ",", rank });
