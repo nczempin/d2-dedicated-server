@@ -12,6 +12,7 @@ const crash = @import("crash.zig");
 const qserver = @import("qserver.zig");
 const realm = @import("realm.zig");
 const chardb = @import("chardb.zig");
+const observer = @import("observer.zig");
 
 /// `applyFixups` takes a plain function pointer with no context argument, so the resolver has to be
 /// reachable from file scope.
@@ -43,6 +44,7 @@ pub fn main(init: std.process.Init) !void {
     // The descriptor is only needed while the segments are being mapped from it.
     var loaded = try macho.load.map(&img, file.fd);
     defer loaded.unmap();
+    observer.configure(file.bytes, &loaded);
     file.closeFd();
 
     // Resolve up front rather than only through the bind walk: it is the same work and the same

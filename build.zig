@@ -471,6 +471,7 @@ pub fn build(b: *std.Build) void {
         // The native host's crash reporter. Rooted here rather than at main.zig because that one
         // runs the game; this is the part with logic worth asserting.
         .{ "apps/d2gs-native/crash.zig", false, false },
+        .{ "apps/d2gs-native/observer_test.zig", false, true },
         // Which saves have already been sent to the store. Pure logic, and the thing standing
         // between an idle server and a redundant write per player per 45 seconds — and, in the
         // other direction, between a changed character and a save that never leaves the disk.
