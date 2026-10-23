@@ -3,7 +3,7 @@ const std = @import("std");
 // Not a global loaded-item census, property snapshot or action permission.
 pub const Item = struct {
     pointer: u32, guid: u32, class: u32, mode: u32, body: u8, page: u8,
-    data: u32, previous: u32, next: u32, parent: u32,
+    quality: u32, flags: u32, data: u32, previous: u32, next: u32, parent: u32,
 };
 pub const Slice = struct {
     inventory: u32, owner: u32, cursor: u32,
@@ -19,11 +19,13 @@ fn itemAt(access: anytype, at: u32) ?Item {
         .class = access.read(at + 4) orelse return null,
         .mode = access.read(at + 0x10) orelse return null,
         .data = data, .body = @truncate(bp), .page = @truncate(bp >> 8),
+        .quality = access.read(data) orelse return null,
+        .flags = access.read(data + 0x18) orelse return null,
         .parent = access.read(data + 0x5c) orelse return null,
         .previous = access.read(data + 0x60) orelse return null,
         .next = access.read(data + 0x64) orelse return null,
     };
-    if (row.guid == 0 or row.mode > 6) return null;
+    if (row.guid == 0 or row.mode > 6 or row.quality < 1 or row.quality > 9) return null;
     return row;
 }
 pub fn capture(access: anytype, actor: u32, guid: u32) ?Slice {
@@ -82,6 +84,7 @@ const Fake = struct {
             0x40000, 0x41000 => 4, 0x40004 => 67, 0x41004 => 87,
             0x4000c => 2, 0x4100c => 3, 0x40010 => 1, 0x41010 => 2,
             0x40014 => 0x50000, 0x41014 => 0x51000,
+            0x50000, 0x51000 => 2, 0x50018, 0x51018 => 0x10,
             0x50044 => 4, 0x51044 => 0,
             0x5005c => 0x30000, 0x5105c => if (self.foreign) 0x99000 else 0x30000,
             0x50060 => 0, 0x51060 => 0x40000,

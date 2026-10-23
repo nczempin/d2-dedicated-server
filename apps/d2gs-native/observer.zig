@@ -112,7 +112,7 @@ pub fn observe(game_id: u32, game: u32) void {
         if (o.inventory) |inv| {
             std.debug.print("native-owned-inventory: {{\"game_id\":{d},\"actor\":{d},\"native_frame\":{d},\"scope\":\"current_actor_top_level_chain\",\"inventory\":{d},\"cursor\":{d},\"count\":{d},\"items\":[", .{ o.game_id, o.actor, o.frame, inv.inventory, inv.cursor, inv.count });
             for (inv.items[0..inv.count], 0..) |item, i| {
-                std.debug.print("{s}{{\"guid\":{d},\"class\":{d},\"mode\":{d},\"body\":{d},\"page\":{d},\"owner\":{d}}}", .{ if (i == 0) @as([]const u8, "") else ",", item.guid, item.class, item.mode, item.body, item.page, inv.owner });
+                std.debug.print("{s}{{\"guid\":{d},\"class\":{d},\"mode\":{d},\"body\":{d},\"page\":{d},\"owner\":{d},\"quality\":{d},\"flags\":{d}}}", .{ if (i == 0) @as([]const u8, "") else ",", item.guid, item.class, item.mode, item.body, item.page, inv.owner, item.quality, item.flags });
             }
             std.debug.print("]}}\n", .{});
         } else {
@@ -124,7 +124,7 @@ pub fn observe(game_id: u32, game: u32) void {
             std.debug.print("],\"effective_ranks_36_65\":[", .{});
             for (skills.effective, 0..) |rank, i| std.debug.print("{s}{d}", .{ if (i == 0) @as([]const u8, "") else ",", rank });
             std.debug.print("],\"hands\":[", .{});
-            for (skills.hands, 0..) |hand, i| std.debug.print("{s}{{\"known\":{},\"id\":{d},\"owner\":{d}}}", .{ if (i == 0) @as([]const u8, "") else ",", hand.known, hand.id, hand.owner });
+            for (skills.hands, 0..) |hand, i| std.debug.print("{s}{{\"known\":{},\"id\":{d},\"owner\":{d},\"quality\":{d},\"flags\":{d}}}", .{ if (i == 0) @as([]const u8, "") else ",", hand.known, hand.id, hand.owner });
             std.debug.print("]}}\n", .{});
         }
     } else {
