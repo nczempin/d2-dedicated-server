@@ -124,7 +124,7 @@ pub fn observe(game_id: u32, game: u32) void {
             std.debug.print("],\"effective_ranks_36_65\":[", .{});
             for (skills.effective, 0..) |rank, i| std.debug.print("{s}{d}", .{ if (i == 0) @as([]const u8, "") else ",", rank });
             std.debug.print("],\"hands\":[", .{});
-            for (skills.hands, 0..) |hand, i| std.debug.print("{s}{{\"known\":{},\"id\":{d},\"owner\":{d},\"quality\":{d},\"flags\":{d}}}", .{ if (i == 0) @as([]const u8, "") else ",", hand.known, hand.id, hand.owner });
+            for (skills.hands, 0..) |hand, i| std.debug.print("{s}{{\"known\":{},\"id\":{d},\"owner\":{d}}}", .{ if (i == 0) @as([]const u8, "") else ",", hand.known, hand.id, hand.owner });
             std.debug.print("]}}\n", .{});
         }
     } else {
