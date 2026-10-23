@@ -2,6 +2,7 @@ const std = @import("std");
 const builtin = @import("builtin");
 const player_skills = @import("player_skills.zig");
 const player_inventory = @import("player_inventory.zig");
+const player_census = @import("player_census.zig");
 
 // Qualified ONLY against the exact i386 Mac 1.14d image documented in native-observer.md.
 pub const image_sha256 = "1e8dd6dd3d19019cbaa29270f4abfb04960fcf1ce5d341fa520863b0d640d177";
@@ -12,6 +13,7 @@ pub const Observation = struct {
     stats: [16]i32,
     skills: ?player_skills.Slice,
     inventory: ?player_inventory.Slice,
+    census: ?player_census.Slice,
     pub fn alive(self: Observation) bool { return self.hp_q8 > 0 and self.mode != 0 and self.mode != 17; }
 };
 
@@ -39,6 +41,7 @@ pub fn capture(access: anytype, game_id: u32, game: u32, guid: u32) ?Observation
     }
     const skills = if (class == 1) player_skills.capture(access, unit) else null;
     const inventory = player_inventory.capture(access, unit, actor);
+    const census = player_census.capture(access, game, actor);
     const hp = values[6];
     if (hp < 0) return null;
     if (access.find(game, guid) != unit or
@@ -48,7 +51,7 @@ pub fn capture(access: anytype, game_id: u32, game: u32, guid: u32) ?Observation
         (access.read(unit + 0x10) orelse return null) != mode or
         (access.read(unit + 0x5c) orelse return null) != stats or
         (access.read(game + 0xa8) orelse return null) != frame) return null;
-    return .{ .game_id = game_id, .actor = actor, .class = class, .mode = mode, .frame = frame, .hp_q8 = hp, .stats = values, .skills = skills, .inventory = inventory };
+    return .{ .game_id = game_id, .actor = actor, .class = class, .mode = mode, .frame = frame, .hp_q8 = hp, .stats = values, .skills = skills, .inventory = inventory, .census = census };
 }
 
 pub fn qualified(bytes: []const u8) bool {
@@ -89,6 +92,11 @@ pub fn configure(bytes: []const u8, image: anytype) void {
     skiller = @ptrFromInt(image.at(0x0018693f));
     leveller = @ptrFromInt(image.at(0x0018608e));
     remaining = 64; // bounded diagnostic producer; no input or protocol claims.
+    if (getenv("D2GS_OBSERVE_MAX_RECORDS")) |requested_count| {
+        const count = std.fmt.parseInt(u32, std.mem.span(requested_count), 10) catch return;
+        if (count == 0 or count > 25000) { remaining = 0; return; }
+        remaining = count;
+    }
 }
 
 const Native = struct {
@@ -109,6 +117,13 @@ pub fn observe(game_id: u32, game: u32) void {
     var native = Native{};
     if (capture(&native, game_id, game, selected_guid)) |o| {
         std.debug.print("native-observer: {{\"game_id\":{d},\"actor\":{d},\"class\":{d},\"mode\":{d},\"native_frame\":{d},\"hp_q8\":{d},\"stats_layer0\":[{d},{d},{d},{d},{d},{d},{d},{d},{d},{d},{d},{d},{d},{d},{d},{d}]}}\n", .{ o.game_id, o.actor, o.class, o.mode, o.frame, o.hp_q8, o.stats[0], o.stats[1], o.stats[2], o.stats[3], o.stats[4], o.stats[5], o.stats[6], o.stats[7], o.stats[8], o.stats[9], o.stats[10], o.stats[11], o.stats[12], o.stats[13], o.stats[14], o.stats[15] });
+        if (o.census) |census| {
+            std.debug.print("native-player-census: {{\"game_id\":{d},\"actor\":{d},\"native_frame\":{d},\"scope\":\"complete_current_loaded_type0\",\"rows\":[", .{ o.game_id, o.actor, o.frame });
+            for (census.rows[0..census.count], 0..) |row, i| {
+                std.debug.print("{s}{{\"guid\":{d},\"class\":{d},\"mode\":{d},\"raw_x\":{d},\"raw_y\":{d},\"area\":{d},\"inventory\":{d},\"inventory_status\":{d},\"name\":\"{s}\"}}", .{ if (i == 0) @as([]const u8, "") else ",", row.guid,row.class,row.mode,row.raw_x,row.raw_y,row.area,row.inventory,row.inventory_status,std.mem.sliceTo(&row.name,0) });
+            }
+            std.debug.print("]}}\n", .{});
+        }
         if (o.inventory) |inv| {
             std.debug.print("native-owned-inventory: {{\"game_id\":{d},\"actor\":{d},\"native_frame\":{d},\"scope\":\"current_actor_top_level_chain\",\"inventory\":{d},\"cursor\":{d},\"count\":{d},\"items\":[", .{ o.game_id, o.actor, o.frame, inv.inventory, inv.cursor, inv.count });
             for (inv.items[0..inv.count], 0..) |item, i| {
