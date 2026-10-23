@@ -6,6 +6,7 @@ const player_census = @import("player_census.zig");
 
 // Qualified ONLY against the exact i386 Mac 1.14d image documented in native-observer.md.
 pub const image_sha256 = "1e8dd6dd3d19019cbaa29270f4abfb04960fcf1ce5d341fa520863b0d640d177";
+pub const StaffGrant = struct { guid: u32, value: i32 };
 pub const Observation = struct {
     game_id: u32, actor: u32, class: u32, mode: u32, frame: u32, hp_q8: i32,
     // Native getter values indexed by the engine stat id 0..15, layer zero.
@@ -14,6 +15,7 @@ pub const Observation = struct {
     skills: ?player_skills.Slice,
     inventory: ?player_inventory.Slice,
     census: ?player_census.Slice,
+    staff_grant: ?StaffGrant,
     pub fn alive(self: Observation) bool { return self.hp_q8 > 0 and self.mode != 0 and self.mode != 17; }
 };
 
@@ -42,6 +44,29 @@ pub fn capture(access: anytype, game_id: u32, game: u32, guid: u32) ?Observation
     const skills = if (class == 1) player_skills.capture(access, unit) else null;
     const inventory = player_inventory.capture(access, unit, actor);
     const census = player_census.capture(access, game, actor);
+    var staff_grant: ?StaffGrant = null;
+    if (inventory) |before| {
+        var equipped: ?player_inventory.Item = null;
+        var unique = true;
+        for (before.items[0..before.count]) |item| {
+            if (item.class == 63 and item.mode == 1 and item.body == 4) {
+                if (equipped != null) unique = false else equipped = item;
+            }
+        }
+        if (unique) if (equipped) |staff| {
+            const first = access.stat(staff.pointer, 107, 36);
+            const second = access.stat(staff.pointer, 107, 36);
+            if (first != null and second != null and first.? > 0 and first.? == second.?) {
+                if (player_inventory.capture(access, unit, actor)) |after| {
+                    var stable = before.inventory == after.inventory and before.owner == after.owner and before.cursor == after.cursor and before.count == after.count;
+                    if (stable) for (before.items[0..before.count], after.items[0..after.count]) |a, b| {
+                        if (!std.meta.eql(a, b)) { stable = false; break; }
+                    };
+                    if (stable) staff_grant = .{ .guid = staff.guid, .value = first.? };
+                }
+            }
+        };
+    }
     const hp = values[6];
     if (hp < 0) return null;
     if (access.find(game, guid) != unit or
@@ -51,7 +76,7 @@ pub fn capture(access: anytype, game_id: u32, game: u32, guid: u32) ?Observation
         (access.read(unit + 0x10) orelse return null) != mode or
         (access.read(unit + 0x5c) orelse return null) != stats or
         (access.read(game + 0xa8) orelse return null) != frame) return null;
-    return .{ .game_id = game_id, .actor = actor, .class = class, .mode = mode, .frame = frame, .hp_q8 = hp, .stats = values, .skills = skills, .inventory = inventory, .census = census };
+    return .{ .game_id = game_id, .actor = actor, .class = class, .mode = mode, .frame = frame, .hp_q8 = hp, .stats = values, .skills = skills, .inventory = inventory, .census = census, .staff_grant = staff_grant };
 }
 
 pub fn qualified(bytes: []const u8) bool {
@@ -124,6 +149,7 @@ pub fn observe(game_id: u32, game: u32) void {
             }
             std.debug.print("]}}\n", .{});
         }
+        if (o.staff_grant) |grant| std.debug.print("native-staff-grant: {{\"game_id\":{d},\"actor\":{d},\"native_frame\":{d},\"staff_guid\":{d},\"stat\":107,\"layer\":36,\"value\":{d}}}\n", .{ o.game_id, o.actor, o.frame, grant.guid, grant.value });
         if (o.inventory) |inv| {
             std.debug.print("native-owned-inventory: {{\"game_id\":{d},\"actor\":{d},\"native_frame\":{d},\"scope\":\"current_actor_top_level_chain\",\"inventory\":{d},\"cursor\":{d},\"count\":{d},\"items\":[", .{ o.game_id, o.actor, o.frame, inv.inventory, inv.cursor, inv.count });
             for (inv.items[0..inv.count], 0..) |item, i| {
